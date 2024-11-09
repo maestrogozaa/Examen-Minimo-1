@@ -1,0 +1,1 @@
+# Resolucion-Minimo-1
