@@ -16,11 +16,14 @@ public class ProductManagerImpl implements ProductManager {
 
     private ProductManagerImpl() {
         this.products = new ArrayList<>();
+        this.orderQueue = new LinkedList<>();
+        this.userOrders = new HashMap<>();
+        this.pendingOrders = new LinkedList<>(); // Inicialización de pendingOrders
+
+        // Agregar algunos productos de ejemplo
         addProduct(new Product("1", "Producto A", 10.0));
         addProduct(new Product("2", "Producto B", 20.0));
         addProduct(new Product("3", "Producto C", 5.0));
-        this.orderQueue = new LinkedList<>();
-        this.userOrders = new HashMap<>();
     }
 
     public static ProductManagerImpl getInstance() {
@@ -40,7 +43,8 @@ public class ProductManagerImpl implements ProductManager {
     // Método para limpiar los datos (útil para pruebas)
     public void clearData() {
         this.products.clear();
-        this.pendingOrders.clear();
+        this.orderQueue.clear();
+        this.pendingOrders.clear(); // Limpiar pendingOrders
         this.userOrders.clear();
         logger.info("Datos limpiados");
     }
@@ -71,6 +75,7 @@ public class ProductManagerImpl implements ProductManager {
             return;
         }
         orderQueue.add(order);
+        pendingOrders.add(order); // Agregar a los pedidos pendientes
         userOrders.computeIfAbsent(order.getUserId(), k -> new ArrayList<>()).add(order);
         logger.info("Order created successfully: " + order);
     }
@@ -93,6 +98,7 @@ public class ProductManagerImpl implements ProductManager {
             }
         }
         order.setServed(true);
+        pendingOrders.remove(order); // Quitar de los pedidos pendientes
         logger.info("Order served: " + order);
         return order;
     }
